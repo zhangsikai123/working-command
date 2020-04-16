@@ -1,0 +1,195 @@
+#!/bin/bash
+function replace(){
+  file=$1
+  str=$2
+  with=$3
+  sed -i.bak "s/${str}/${with}/g" $file;rm -r ${file}.bak
+}
+## DOCKER ##
+function dm(){
+ docker-machine $@
+}
+function dmchange(){
+ eval $(docker-machine env $1)
+}
+#####
+function sky2(){
+ ssh root@mail.zhangsikai.com
+
+}
+function foursome(){
+ ssh root@v.whereeat.xyz
+}
+function luke(){
+  java -jar /Users/zhangsikai/Downloads/lucene-8.4.1/luke/target/artifacts/luke_jar/luke.jar
+}
+function gtag(){
+  if test $1 = "check"
+  then
+	git tag -l | grep release-
+  else
+  	git tag $1;
+  	git push origin $1;
+  fi
+}
+
+function zkc(){
+  # zookeeper client
+  cd ~/Desktop/myCode/zookeeper-3.3.6/bin;
+  ./zkCli.sh -server $1
+} 
+
+function gam(){
+  # git add + merge
+  git add .;
+  git merge --continue
+}
+
+function gar(){
+  # git add + rebase
+  git add .;
+  git rebase --continue
+}
+
+function servicemesh(){
+	cd ~/Desktop/myCode/xiaohongshu/service_mesh_dev/
+	./service-mesh-agent-start.sh
+}
+
+function findhost(){
+	nslookup $1
+}
+
+function gagm(){
+	git add .;
+	git commit --amend
+}
+function gl(){
+	git log
+}
+
+function co(){
+	git log | grep commit -m 1 | cut -d ' ' -f2
+}
+
+function rebase(){
+	current_branch=$(git branch| grep \* | cut -d ' ' -f2);
+	git fetch -a;
+	git checkout $1;
+	git pull;
+	git checkout $current_branch;
+	git rebase $1;
+}
+
+function print_my_input(){
+	echo 'input: ' $1
+}
+
+function gc(){
+	git checkout $1;
+}
+
+function gb(){
+	git branch $1
+}
+
+function gs(){
+	git status
+}
+
+function gags(){
+	git add .;git stash
+}
+
+function pep(){
+	echo "start autopep8 ..."
+	autopep8 -r -i $1
+}
+
+function gsp(){
+	git stash pop
+}
+
+function myip(){
+	ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
+}
+
+# find process
+function findp(){
+	ps aux | grep $1
+}
+
+function gagc(){
+	git add .;git commit -m "$1"
+}
+
+function newbranch(){
+	git checkout develop;
+	git pull;
+	git checkout -b $1
+}
+
+function dbranch(){
+	git checkout develop;
+	git branch -D $1
+}
+
+function zkCli(){
+	cd ~/Desktop/myCode/zookeeper-3.3.6/bin/;
+	./zkCli.sh
+}	
+
+function ggpush(){
+	git push --set-upstream origin $(thisbranch)
+}
+
+function amend(){
+	git commit --amend
+}
+
+function arcpush(){
+	rebase develop;
+	arc diff develop --create
+}
+
+function coarc(){
+        gl | grep Differential\ Revision: -m 1
+}
+
+function arcupdate(){
+	arc_rev=$1
+	echo $1
+	if test arc_rev=""
+	then
+		arc_rev=$(coarc | cut -d / -f4)
+	fi
+	rebase develop;
+	echo "update arc:" 
+	echo $arc_rev
+	arc diff develop --update $arc_rev
+}
+function arcupdatej(){
+	arc_rev=$1
+        echo $1
+        if test arc_rev=""
+        then
+                arc_rev=$(coarc | cut -d / -f4)
+        fi
+        rebase master;
+        echo "update arc:"
+        echo $arc_rev
+        arc diff master --update $arc_rev
+}
+
+function arcpushj(){
+	rebase master;
+        arc diff master --create
+}
+
+function tb(){
+	thisbranch
+}
+
+function eat(){
+	ssh root@whereeat.xyz
+}
