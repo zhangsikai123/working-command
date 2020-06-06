@@ -1,6 +1,26 @@
 #!/bin/bash
 
+## WORK ENV
+function go_dev(){
+    if [ $1 == 'data-gen' ]
+    then
+        env="data-gen-dev-environ"
+    else
+        env="go-dev"
+    fi
+    echo $env
+    docker run -it -p 8080:8080 -v $(pwd):/go/src/app $env sh
+}
+
 ## DOCKER ##
+function docker_clean(){
+    docker container prune -f;
+    docker rmi $(docker images -f "dangling=true" -q);
+    echo "house keeping done"
+}
+function docker_ip(){
+    docker inspect --format '{{ .NetworkSettings.IPAddress }}' $1
+}
 function dm(){
  docker-machine $@
 }
@@ -10,6 +30,33 @@ function dmchange(){
 }
 
 ## GIT
+
+function amend(){
+	git commit --amend
+}
+
+function arcpush(){
+	rebase develop;
+	arc diff develop --create
+}
+
+function coarc(){
+        gl | grep Differential\ Revision: -m 1
+}
+
+function arcupdate(){
+	arc_rev=$1
+	echo $1
+	if test arc_rev=""
+	then
+		arc_rev=$(coarc | cut -d / -f4)
+	fi
+	rebase develop;
+	echo "update arc:"
+	echo $arc_rev
+	arc diff develop --update $arc_rev
+}
+
 function thisbranch(){
     git branch | cut -d ' ' -f2
 }
@@ -103,8 +150,6 @@ function rebase(){
 }
 
 ## SYS
-
-
 function luke(){
   java -jar /Users/zhangsikai/Downloads/lucene-8.4.1/luke/target/artifacts/luke_jar/luke.jar
 }
@@ -113,12 +158,6 @@ function zkc(){
   # zookeeper client
   cd ~/Desktop/myCode/zookeeper-3.3.6/bin;
   ./zkCli.sh -server $1
-}
-
-
-function servicemesh(){
-	cd ~/Desktop/myCode/xiaohongshu/service_mesh_dev/
-	./service-mesh-agent-start.sh
 }
 
 function findhost(){
@@ -150,32 +189,6 @@ function zkCli(){
 	./zkCli.sh
 }
 
-
-function amend(){
-	git commit --amend
-}
-
-function arcpush(){
-	rebase develop;
-	arc diff develop --create
-}
-
-function coarc(){
-        gl | grep Differential\ Revision: -m 1
-}
-
-function arcupdate(){
-	arc_rev=$1
-	echo $1
-	if test arc_rev=""
-	then
-		arc_rev=$(coarc | cut -d / -f4)
-	fi
-	rebase develop;
-	echo "update arc:"
-	echo $arc_rev
-	arc diff develop --update $arc_rev
-}
 
 function replace(){
   file=$1
